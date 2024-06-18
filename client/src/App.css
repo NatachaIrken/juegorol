@@ -1,0 +1,66 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  color: #fff; 
+}
+
+.App {
+  max-width: 800px;
+  margin: 50px auto;
+  background: #333; 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: space-around;
+  background: #000; 
+}
+
+.tab-button {
+  flex: 1;
+  padding: 15px;
+  cursor: pointer;
+  background: linear-gradient(45deg, #00c6ff, #0072ff); 
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.tab-button.active,
+.tab-button:hover {
+  background: linear-gradient(45deg, #0072ff, #00c6ff);
+  transform: scale(1.05); 
+}
+
+.tab-content-container {
+  padding: 20px;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+  background: #444; 
+  border-top: 1px solid #555;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #fff; 
+}
