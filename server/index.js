@@ -1,61 +1,53 @@
-const express = require("express");
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
-const mysql = require("mysql");
 
+app.use(cors());
+app.use(express.json());
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+mongoose.connect('mongodb://localhost:27017/juego_rol', { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Conectado a la base de datos MongoDB'))
+    .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-const db = mysql.createConnection({
-    host:"localhost",
-    root:"root",
-    pass:"",
-    database:"juego_rol"
+const RazaSchema = new mongoose.Schema({
+    nombre: String,
+    poderes: [{ nombre: String, detalle: String }],
+    habilidades: [{ nombre: String, detalle: String }]
 });
 
-db.connect((err) => {
-    if (err) {
-        throw err;
+const PersonajeSchema = new mongoose.Schema({
+    nombre_jugador: String,
+    nombre_personaje: String,
+    raza_id: mongoose.Schema.Types.ObjectId,
+    estado_id: String,
+    nivel: Number,
+    poderes: [String],
+    habilidades: [String]
+});
+
+const Raza = mongoose.model('Raza', RazaSchema);
+const Personaje = mongoose.model('Personaje', PersonajeSchema);
+
+app.get('/api/razas', async (req, res) => {
+    try {
+        const razas = await Raza.find();
+        res.json(razas);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener razas' });
     }
-    console.log("Conectado a la base de datos MySQL");
 });
 
-app.listen(3001,()=>{
-    console.log("corriendo en el puerto 3001")
-}) 
-
-// Endpoint para crear un usuario
-app.post("/usuarios", (req, res) => {
-    const { nombre_usuario, contrasena, rol_id } = req.body;
-    const INSERT_USUARIO_QUERY = `INSERT INTO Usuarios (nombre_usuario, contrasena, rol_id) VALUES (?, ?, ?)`;
-    
-    db.query(INSERT_USUARIO_QUERY, [nombre_usuario, contrasena, rol_id], (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("Error al crear usuario");
-        } else {
-            console.log("Usuario creado correctamente");
-            res.status(201).send("Usuario creado correctamente");
-        }
-    });
+app.post('/api/personajes', async (req, res) => {
+    try {
+        const personaje = new Personaje(req.body);
+        await personaje.save();
+        res.status(201).json(personaje);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al crear personaje' });
+    }
 });
 
-// Endpoint para obtener todos los usuarios
-app.get("/usuarios", (req, res) => {
-    const SELECT_USUARIOS_QUERY = `SELECT * FROM Usuarios`;
-    db.query(SELECT_USUARIOS_QUERY, (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("Error al obtener usuarios");
-        } else {
-            res.status(200).json(results);
-        }
-    });
+app.listen(3001, () => {
+    console.log('Servidor corriendo en el puerto 3001');
 });
-
-const PORT = 3001;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
-
-
