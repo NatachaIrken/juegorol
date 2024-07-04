@@ -32,20 +32,6 @@ function App() {
         setRazas(data);
       });
   }, []);
-
-  useEffect(() => {
-    if (personajeData.raza_id) {
-      const selectedRaza = razas.find(raza => raza._id === personajeData.raza_id);
-      if (selectedRaza) {
-        setPersonajeData(prevState => ({
-          ...prevState,
-          poderes: selectedRaza.poderes.map(poder => poder.nombre),
-          habilidades: selectedRaza.habilidades.map(habilidad => habilidad.nombre)
-        }));
-      }
-    }
-  }, [personajeData.raza_id, razas]);
-
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
@@ -92,7 +78,7 @@ function App() {
 
   const handleUsuarioSubmit = (e) => {
     e.preventDefault();
-    fetch('http://localhost:3001/usuarios', {
+    fetch('http://localhost:3001/api/usuarios', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -112,6 +98,15 @@ function App() {
         });
       });
   };
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/personajes')
+      .then(response => response.json())
+      .then(data => {
+        console.log("Personajes:", data);
+        setPersonajes(data);
+      });
+  }, []);
 
   const handleEdit = (personaje) => {
     // Manejar edición de personaje
@@ -205,7 +200,7 @@ function App() {
               <tr key={personaje._id}>
                 <td>{personaje.nombre_jugador}</td>
                 <td>{personaje.nombre_personaje}</td>
-                <td>{personaje.raza_id}</td>
+                <td>{personaje.raza_id}</td> {/* Aquí deberías mostrar el nombre de la raza */}
                 <td>{personaje.estado_id}</td>
                 <td>{personaje.nivel}</td>
                 <td>{personaje.poderes.join(', ')}</td>
