@@ -10,7 +10,6 @@ mongoose.connect('mongodb://localhost:27017/juego_rol', { useNewUrlParser: true,
     .then(() => console.log('Conectado a la base de datos MongoDB'))
     .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Define los esquemas y modelos de MongoDB
 const RazaSchema = new mongoose.Schema({
     nombre: String,
     poderes: [{ nombre: String, detalle: String }],
@@ -19,7 +18,6 @@ const RazaSchema = new mongoose.Schema({
 
 const Raza = mongoose.model('Raza', RazaSchema);
 
-// Insertar las razas y sus poderes y habilidades iniciales
 const RazasIniciales = [
   { 
     nombre: 'Humano',
@@ -104,38 +102,12 @@ Raza.insertMany(RazasIniciales)
   .catch(err => console.error('Error al insertar razas con poderes y habilidades:', err));
 
 const PersonajeSchema = new mongoose.Schema({
-    nombre_jugador: String,
+    usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
     nombre_personaje: String,
-    raza_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Raza' }, // Referencia a Raza
-    estado_id: String,
-    nivel: Number,
+    raza_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Raza' },
+    nivel: { type: Number, default: 1 },
     poderes: [String],
     habilidades: [String]
-});
-
-const EstadoSchema = new mongoose.Schema({
-    nombre: String,
-});
-
-const HabilidadSchema = new mongoose.Schema({
-    nombre: String,
-    detalle: String
-});
-
-const PoderSchema = new mongoose.Schema({
-    nombre: String,
-    detalle: String
-});
-
-const EquipamientoSchema = new mongoose.Schema({
-    casco: String,
-    armadura: String,
-    piernas: String,
-    botas: String,
-    collar: String,
-    anillo1: String,
-    anillo2: String,
-    pulsera: String
 });
 
 const UsuarioSchema = new mongoose.Schema({
@@ -147,21 +119,30 @@ const UsuarioSchema = new mongoose.Schema({
     rol_id: Number
 });
 
-
 const Personaje = mongoose.model('Personaje', PersonajeSchema);
-const Estado = mongoose.model('Estado', EstadoSchema);
-const Habilidad = mongoose.model('Habilidad', HabilidadSchema);
-const Poder = mongoose.model('Poder', PoderSchema);
-const Equipamiento = mongoose.model('Equipamiento', EquipamientoSchema);
 const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
-// Definición de rutas para API REST
-app.get('/api/razas', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     try {
-        const razas = await Raza.find();
-        res.json(razas);
+        const { nombre_usuario, contrasena } = req.body;
+        const usuario = await Usuario.findOne({ nombre_usuario, contrasena });
+        if (usuario) {
+            res.json({ success: true, usuario });
+        } else {
+            res.json({ success: false });
+        }
     } catch (err) {
-        res.status(500).json({ error: 'Error al obtener razas' });
+        res.status(500).json({ error: 'Error al autenticar usuario' });
+    }
+});
+
+app.get('/api/personajes', async (req, res) => {
+    try {
+        const { usuario_id } = req.query;
+        const personajes = await Personaje.find({ usuario_id }).populate('raza_id');
+        res.json(personajes);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener personajes' });
     }
 });
 
@@ -175,88 +156,12 @@ app.post('/api/personajes', async (req, res) => {
     }
 });
 
-app.get('/api/estados', async (req, res) => {
+app.get('/api/razas', async (req, res) => {
     try {
-        const estados = await Estado.find();
-        res.json(estados);
+        const razas = await Raza.find();
+        res.json(razas);
     } catch (err) {
-        res.status(500).json({ error: 'Error al obtener estados' });
-    }
-});
-
-app.post('/api/estados', async (req, res) => {
-    try {
-        const estado = new Estado(req.body);
-        await estado.save();
-        res.status(201).json(estado);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear estado' });
-    }
-});
-
-app.get('/api/habilidades', async (req, res) => {
-    try {
-        const habilidades = await Habilidad.find();
-        res.json(habilidades);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener habilidades' });
-    }
-});
-
-app.post('/api/habilidades', async (req, res) => {
-    try {
-        const habilidad = new Habilidad(req.body);
-        await habilidad.save();
-        res.status(201).json(habilidad);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear habilidad' });
-    }
-});
-
-app.get('/api/poderes', async (req, res) => {
-    try {
-        const poderes = await Poder.find();
-        res.json(poderes);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener poderes' });
-    }
-});
-
-app.post('/api/poderes', async (req, res) => {
-    try {
-        const poder = new Poder(req.body);
-        await poder.save();
-        res.status(201).json(poder);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear poder' });
-    }
-});
-
-app.get('/api/equipamientos', async (req, res) => {
-    try {
-        const equipamientos = await Equipamiento.find();
-        res.json(equipamientos);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener equipamientos' });
-    }
-});
-
-app.post('/api/equipamientos', async (req, res) => {
-    try {
-        const equipamiento = new Equipamiento(req.body);
-        await equipamiento.save();
-        res.status(201).json(equipamiento);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear equipamiento' });
-    }
-});
-
-app.get('/api/usuarios', async (req, res) => {
-    try {
-        const usuarios = await Usuario.find();
-        res.json(usuarios);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener usuarios' });
+        res.status(500).json({ error: 'Error al obtener razas' });
     }
 });
 

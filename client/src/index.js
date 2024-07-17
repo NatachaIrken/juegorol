@@ -1,16 +1,33 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import CreateCharacter from './components/CreateCharacter';
+import ManageCharacters from './components/ManageCharacters';
+import EditCharacter from './components/EditCharacter';
+import RegisterUser from './components/RegisterUser';
+import Login from './components/Login';
+import './index.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const App = () => {
+    return (
+        <Router>
+            <div className="container">
+                <Navbar />
+                <h1>Infinity World</h1>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/create-character" element={<CreateCharacter />} />
+                    <Route path="/manage-characters" element={<ManageCharacters />} />
+                    <Route path="/edit-character/:id" element={<EditCharacter />} />
+                    <Route path="/register-user" element={<RegisterUser />} />
+                    <Route path="/login" element={<Login />} />
+                </Routes>
+            </div>
+            <div className="footer">Marca registrada InfinityGames®</div>
+        </Router>
+    );
+};
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(<App />, document.getElementById('root'));
