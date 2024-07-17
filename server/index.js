@@ -174,3 +174,7 @@ app.post('/api/usuarios', async (req, res) => {
         res.status(500).json({ error: 'Error al crear usuario' });
     }
 });
+
+app.listen(3001, () => {
+    console.log('Servidor corriendo en el puerto 3001');
+});

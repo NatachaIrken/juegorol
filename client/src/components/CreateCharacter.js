@@ -4,7 +4,7 @@ import axios from 'axios';
 const CreateCharacter = () => {
     const [personaje, setPersonaje] = useState('');
     const [raza, setRaza] = useState('');
-    const [nivel, setNivel] = useState(1); // Nivel por defecto a 1
+    const [nivel, setNivel] = useState(1); 
     const [razas, setRazas] = useState([]);
     const [personajeCreado, setPersonajeCreado] = useState(null);
 
@@ -27,7 +27,7 @@ const CreateCharacter = () => {
                 setPersonajeCreado(response.data);
                 setPersonaje('');
                 setRaza('');
-                setNivel(1); // Resetear el nivel a 1
+                setNivel(1); 
             })
             .catch(error => console.error(error));
     };
