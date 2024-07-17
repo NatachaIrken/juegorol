@@ -1,0 +1,16 @@
+.home-container {
+    text-align: center;
+    padding: 20px;
+    font-family: 'Cinzel', serif;
+}
+
+.home-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    margin-top: 20px;
+}
+
+h2, p {
+    font-family: 'Cinzel', serif;
+}
