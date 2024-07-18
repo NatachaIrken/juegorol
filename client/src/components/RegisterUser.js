@@ -2,12 +2,23 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const RegisterUser = () => {
-    const [nombre, setNombre] = useState('');
-    const [apellidos, setApellidos] = useState('');
-    const [email, setEmail] = useState('');
-    const [nombre_usuario, setNombreUsuario] = useState('');
-    const [contrasena, setContrasena] = useState('');
+    const [inputs, setInputs] = useState({
+        nombre: '',
+        apellidos: '',
+        email: '',
+        nombreUsuario: '',
+        contrasena: ''
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [registrationSuccess, setRegistrationSuccess] = useState(false); // Nuevo estado para manejar el éxito del registro
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setInputs(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,14 +26,17 @@ const RegisterUser = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await axios.post('http://localhost:3001/api/usuarios', {
-                nombre,
-                apellidos,
-                email,
-                nombre_usuario,
-                contrasena
-            });
+            const response = await axios.post('http://localhost:3001/api/usuarios', inputs);
             console.log(response.data);
+            setRegistrationSuccess(true); // Indica éxito del registro
+            // Limpia los campos después del registro exitoso
+            setInputs({
+                nombre: '',
+                apellidos: '',
+                email: '',
+                nombreUsuario: '',
+                contrasena: ''
+            });
         } catch (error) {
             console.error(error);
         } finally {
@@ -31,52 +45,25 @@ const RegisterUser = () => {
     };
 
     return (
-        <div className="flex flex-col items-center">
-            <h2 className="text-3xl font-bold my-4">Registrar Usuario</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    placeholder="Nombre"
-                    className="p-2 rounded-md bg-gray-800 text-white"
-                />
-                <input
-                    type="text"
-                    value={apellidos}
-                    onChange={(e) => setApellidos(e.target.value)}
-                    placeholder="Apellidos"
-                    className="p-2 rounded-md bg-gray-800 text-white"
-                />
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    className="p-2 rounded-md bg-gray-800 text-white"
-                />
-                <input
-                    type="text"
-                    value={nombre_usuario}
-                    onChange={(e) => setNombreUsuario(e.target.value)}
-                    placeholder="Nombre de Usuario"
-                    className="p-2 rounded-md bg-gray-800 text-white"
-                />
-                <input
-                    type="password"
-                    value={contrasena}
-                    onChange={(e) => setContrasena(e.target.value)}
-                    placeholder="Contraseña"
-                    className="p-2 rounded-md bg-gray-800 text-white"
-                />
-                <button 
-                    type="submit" 
-                    className="p-2 bg-blue-500 rounded-md text-white hover:bg-blue-700"
-                    disabled={isSubmitting}
-                >
-                    Registrar
-                </button>
-            </form>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-6">
+            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Regístrate</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" name="nombre" value={inputs.nombre} onChange={handleInputChange} placeholder="Nombre" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="text" name="apellidos" value={inputs.apellidos} onChange={handleInputChange} placeholder="Apellidos" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="email" name="email" value={inputs.email} onChange={handleInputChange} placeholder="Email" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="text" name="nombreUsuario" value={inputs.nombreUsuario} onChange={handleInputChange} placeholder="Nombre de Usuario" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="password" name="contrasena" value={inputs.contrasena} onChange={handleInputChange} placeholder="Contraseña" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition duration-150 ease-in-out">
+                        {isSubmitting ? 'Registrando...' : 'Register'}
+                    </button>
+                </form>
+                {registrationSuccess && (
+                    <div className="text-center mt-4 text-green-500">
+                        Registro exitoso, gracias!
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

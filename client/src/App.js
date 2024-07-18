@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import CreateCharacter from './components/CreateCharacter';
@@ -19,17 +19,16 @@ const App = () => {
     return (
         <Router>
             <div className="container mx-auto">
-                <Navbar />
+                <Navbar usuario={usuario} />
                 <h1 className="text-center text-5xl my-8">Infinity World</h1>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/create-character" element={<CreateCharacter />} />
-                    <Route path="/manage-characters" element={<ManageCharacters usuario={usuario} />} />
-                    <Route path="/edit-character/:id" element={<EditCharacter />} />
+                    <Route path="/login" element={usuario ? <Navigate replace to="/create-character" /> : <Login onLogin={handleLogin} />} />
+                    <Route path="/create-character" element={usuario ? <CreateCharacter /> : <Navigate replace to="/login" />} />
+                    <Route path="/manage-characters" element={usuario ? <ManageCharacters usuario={usuario} /> : <Navigate replace to="/login" />} />
                     <Route path="/register-user" element={<RegisterUser />} />
-                    <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                    <Route path="/edit-character/:id" element={usuario ? <EditCharacter /> : <Navigate replace to="/login" />} />
                 </Routes>
-                <div className="footer">Marca registrada InfinityGames®</div>
             </div>
         </Router>
     );

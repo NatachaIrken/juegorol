@@ -1,77 +1,123 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom';
 
+const Login = ({ onLogin }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-Modal.setAppElement('#root');
-
-const Login = () => {
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3001/api/login', {
-        nombre_usuario: nombreUsuario,
-        contrasena: contrasena,
-      });
+    const username = e.target.elements.username.value;
+    const password = e.target.elements.password.value;
 
-      if (response.data.success) {
-        setModalMessage('Login exitoso. Bienvenido!');
-      } else {
-        setModalMessage('Nombre de usuario o contraseña incorrectos.');
+    // Simulación de validación
+    const validUsername = 'viki';
+    const validPassword = 'viki';
+
+    if (username === validUsername && password === validPassword) {
+      const usuario = { nombre: username };
+      if (onLogin) {
+        onLogin(usuario);
       }
-    } catch (err) {
-      setModalMessage('Error al autenticar. Inténtalo de nuevo.');
+      setIsModalVisible(true);
+      setErrorMessage(''); // Limpiamos el mensaje de error
+    } else {
+      setErrorMessage('Usuario o contraseña incorrectos');
     }
-    setModalIsOpen(true);
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    navigate('/create-character'); // Redirige a "Crear Personaje"
+};
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
-      <h2 className="text-3xl font-bold my-4 text-white">Login</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
-        <input
-          type="text"
-          value={nombreUsuario}
-          onChange={(e) => setNombreUsuario(e.target.value)}
-          placeholder="Nombre de Usuario"
-          className="w-full p-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="password"
-          value={contrasena}
-          onChange={(e) => setContrasena(e.target.value)}
-          placeholder="Contraseña"
-          className="w-full p-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button type="submit" className="w-full p-2 bg-blue-500 rounded-md text-white hover:bg-blue-700">
-          Login
-        </button>
+    <div style={styles.loginContainer}>
+      <form onSubmit={handleLogin} style={styles.form}>
+        <input type="text" name="username" placeholder="Usuario" required style={styles.input} />
+        <input type="password" name="password" placeholder="Contraseña" required style={styles.input} />
+        <button type="submit" style={styles.button}>Login</button>
+        {errorMessage && <p style={styles.error}>{errorMessage}</p>}
       </form>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Login Modal"
-        className="fixed inset-0 flex items-center justify-center"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-75"
-      >
-        <div className="bg-white p-6 rounded-lg max-w-lg mx-auto text-center">
-          <h2 className="text-xl font-bold mb-4">{modalMessage}</h2>
-          <button onClick={closeModal} className="p-2 bg-red-500 rounded-md text-white hover:bg-red-700">
-            Cerrar
-          </button>
+      {isModalVisible && (
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <p>Login exitoso. ¡Bienvenido!</p>
+            <button style={styles.closeBtn} onClick={handleCloseModal}>Cerrar</button>
+          </div>
         </div>
-      </Modal>
+      )}
     </div>
   );
+};
+
+const styles = {
+  loginContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundColor: '#1a202c', // Fondo oscuro
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  input: {
+    margin: '10px 0',
+    padding: '10px',
+    fontSize: '16px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    backgroundColor: '#2d3748', // Fondo oscuro para los inputs
+    color: 'white',
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: '16px',
+    cursor: 'pointer',
+    backgroundColor: '#2d3748', // Fondo del botón
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+  },
+  error: {
+    color: 'red',
+    marginTop: '10px',
+  },
+  modal: {
+    display: 'block',
+    position: 'fixed',
+    zIndex: 1,
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    overflow: 'auto',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingTop: '60px',
+  },
+  modalContent: {
+    backgroundColor: '#2d3748', // Fondo oscuro para el modal
+    margin: '5% auto',
+    padding: '20px',
+    border: '1px solid #888',
+    width: '80%',
+    textAlign: 'center',
+    color: 'white',
+    borderRadius: '8px',
+  },
+  closeBtn: {
+    backgroundColor: '#e53e3e', // Botón de cerrar en rojo
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '4px',
+  }
 };
 
 export default Login;
