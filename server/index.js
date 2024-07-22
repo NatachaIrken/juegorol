@@ -151,6 +151,15 @@ app.post('/api/personajes', (req, res) => {
         .catch(err => res.status(400).json({ error: err.message }));
 });
 
+app.get('/api/razas', async (req, res) => {
+  try {
+      const razas = await Raza.find();
+      res.json(razas);
+  } catch (err) {
+      res.status(500).json({ error: 'Error al obtener razas' });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
