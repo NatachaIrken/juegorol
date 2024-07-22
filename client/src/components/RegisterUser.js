@@ -6,11 +6,11 @@ const RegisterUser = () => {
         nombre: '',
         apellidos: '',
         email: '',
-        nombreUsuario: '',
+        nombre_usuario: '',
         contrasena: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [registrationSuccess, setRegistrationSuccess] = useState(false); // Nuevo estado para manejar el éxito del registro
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -28,13 +28,12 @@ const RegisterUser = () => {
         try {
             const response = await axios.post('http://localhost:3001/api/usuarios', inputs);
             console.log(response.data);
-            setRegistrationSuccess(true); // Indica éxito del registro
-            // Limpia los campos después del registro exitoso
+            setRegistrationSuccess(true);
             setInputs({
                 nombre: '',
                 apellidos: '',
                 email: '',
-                nombreUsuario: '',
+                nombre_usuario: '',
                 contrasena: ''
             });
         } catch (error) {
@@ -52,7 +51,7 @@ const RegisterUser = () => {
                     <input type="text" name="nombre" value={inputs.nombre} onChange={handleInputChange} placeholder="Nombre" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
                     <input type="text" name="apellidos" value={inputs.apellidos} onChange={handleInputChange} placeholder="Apellidos" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
                     <input type="email" name="email" value={inputs.email} onChange={handleInputChange} placeholder="Email" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
-                    <input type="text" name="nombreUsuario" value={inputs.nombreUsuario} onChange={handleInputChange} placeholder="Nombre de Usuario" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="text" name="nombre_usuario" value={inputs.nombre_usuario} onChange={handleInputChange} placeholder="Nombre de Usuario" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
                     <input type="password" name="contrasena" value={inputs.contrasena} onChange={handleInputChange} placeholder="Contraseña" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
                     <button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition duration-150 ease-in-out">
                         {isSubmitting ? 'Registrando...' : 'Register'}
