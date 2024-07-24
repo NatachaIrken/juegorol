@@ -1,55 +1,58 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const username = e.target.elements.username.value;
-    const password = e.target.elements.password.value;
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const nombre_usuario = e.target.elements.username.value;
+        const contrasena = e.target.elements.password.value;
 
-    // Simulación de validación
-    const validUsername = 'viki';
-    const validPassword = 'viki';
+        try {
+            const response = await axios.post('http://localhost:3001/api/login', { nombre_usuario, contrasena });
+            if (response.data.success) {
+                const usuario = response.data.usuario;
+                if (onLogin) {
+                    onLogin(usuario);
+                }
+                setIsModalVisible(true);
+                setErrorMessage('');
+            } else {
+                setErrorMessage('Usuario o contraseña incorrectos');
+            }
+        } catch (error) {
+            console.error(error);
+            setErrorMessage('Error al autenticar usuario');
+        }
+    };
 
-    if (username === validUsername && password === validPassword) {
-      const usuario = { nombre: username };
-      if (onLogin) {
-        onLogin(usuario);
-      }
-      setIsModalVisible(true);
-      setErrorMessage(''); // Limpiamos el mensaje de error
-    } else {
-      setErrorMessage('Usuario o contraseña incorrectos');
-    }
-  };
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        navigate('/create-character');
+    };
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-    navigate('/create-character'); // Redirige a "Crear Personaje"
-};
-
-  return (
-    <div style={styles.loginContainer}>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input type="text" name="username" placeholder="Usuario" required style={styles.input} />
-        <input type="password" name="password" placeholder="Contraseña" required style={styles.input} />
-        <button type="submit" style={styles.button}>Login</button>
-        {errorMessage && <p style={styles.error}>{errorMessage}</p>}
-      </form>
-      {isModalVisible && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
-            <p>Login exitoso. ¡Bienvenido!</p>
-            <button style={styles.closeBtn} onClick={handleCloseModal}>Cerrar</button>
-          </div>
+    return (
+        <div style={styles.loginContainer}>
+            <form onSubmit={handleLogin} style={styles.form}>
+                <input type="text" name="username" placeholder="Usuario" required style={styles.input} />
+                <input type="password" name="password" placeholder="Contraseña" required style={styles.input} />
+                <button type="submit" style={styles.button}>Login</button>
+                {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+            </form>
+            {isModalVisible && (
+                <div style={styles.modal}>
+                    <div style={styles.modalContent}>
+                        <p>Login exitoso. ¡Bienvenido!</p>
+                        <button style={styles.closeBtn} onClick={handleCloseModal}>Cerrar</button>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 const styles = {

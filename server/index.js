@@ -106,75 +106,61 @@ const PersonajeSchema = new mongoose.Schema({
     nombre_personaje: String,
     raza_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Raza' },
     nivel: { type: Number, default: 1 },
-    poderes: [String],
-    habilidades: [String]
+    estado: { type: String, default: 'Vivo' },
+    habilidades: [{ type: String }],
+    equipamiento: [{ type: String }],
+    poderes: [{ type: String }]
 });
+
+const Personaje = mongoose.model('Personaje', PersonajeSchema);
 
 const UsuarioSchema = new mongoose.Schema({
     nombre: String,
     apellidos: String,
     email: String,
-    nombre_usuario: String,
-    contrasena: String,
-    rol_id: Number
+    nombre_usuario: { type: String, unique: true },
+    contrasena: String
 });
 
-const Personaje = mongoose.model('Personaje', PersonajeSchema);
 const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
-app.post('/api/login', async (req, res) => {
-    try {
-        const { nombre_usuario, contrasena } = req.body;
-        const usuario = await Usuario.findOne({ nombre_usuario, contrasena });
-        if (usuario) {
-            res.json({ success: true, usuario });
-        } else {
-            res.json({ success: false });
-        }
-    } catch (err) {
-        res.status(500).json({ error: 'Error al autenticar usuario' });
-    }
+app.post('/api/usuarios', (req, res) => {
+    const nuevoUsuario = new Usuario(req.body);
+    nuevoUsuario.save()
+        .then(usuario => res.json(usuario))
+        .catch(err => res.status(400).json({ error: err.message }));
 });
 
-app.get('/api/personajes', async (req, res) => {
-    try {
-        const { usuario_id } = req.query;
-        const personajes = await Personaje.find({ usuario_id }).populate('raza_id');
-        res.json(personajes);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener personajes' });
-    }
+app.post('/api/login', (req, res) => {
+    const { nombre_usuario, contrasena } = req.body;
+    Usuario.findOne({ nombre_usuario, contrasena })
+        .then(usuario => {
+            if (usuario) {
+                res.json({ success: true, usuario });
+            } else {
+                res.json({ success: false });
+            }
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
 });
 
-app.post('/api/personajes', async (req, res) => {
-    try {
-        const personaje = new Personaje(req.body);
-        await personaje.save();
-        res.status(201).json(personaje);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear personaje' });
-    }
+app.post('/api/personajes', (req, res) => {
+    const nuevoPersonaje = new Personaje(req.body);
+    nuevoPersonaje.save()
+        .then(personaje => res.json(personaje))
+        .catch(err => res.status(400).json({ error: err.message }));
 });
 
 app.get('/api/razas', async (req, res) => {
-    try {
-        const razas = await Raza.find();
-        res.json(razas);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener razas' });
-    }
+  try {
+      const razas = await Raza.find();
+      res.json(razas);
+  } catch (err) {
+      res.status(500).json({ error: 'Error al obtener razas' });
+  }
 });
 
-app.post('/api/usuarios', async (req, res) => {
-    try {
-        const usuario = new Usuario(req.body);
-        await usuario.save();
-        res.status(201).json(usuario);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al crear usuario' });
-    }
-});
-
-app.listen(3001, () => {
-    console.log('Servidor corriendo en el puerto 3001');
+const PORT = 3001;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

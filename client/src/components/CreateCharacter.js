@@ -4,8 +4,13 @@ import axios from 'axios';
 const CreateCharacter = () => {
     const [personaje, setPersonaje] = useState('');
     const [raza, setRaza] = useState('');
-    const [nivel, setNivel] = useState(1); 
+    const [nivel, setNivel] = useState(1);
     const [razas, setRazas] = useState([]);
+    const [habilidades, setHabilidades] = useState([]);
+    const [poderes, setPoderes] = useState([]);
+    const [habilidad1, setHabilidad1] = useState('');
+    const [habilidad2, setHabilidad2] = useState('');
+    const [poder, setPoder] = useState('');
     const [personajeCreado, setPersonajeCreado] = useState(null);
 
     useEffect(() => {
@@ -14,12 +19,27 @@ const CreateCharacter = () => {
             .catch(error => console.error(error));
     }, []);
 
+    useEffect(() => {
+        if (raza) {
+            const razaSeleccionada = razas.find(r => r._id === raza);
+            if (razaSeleccionada) {
+                setHabilidades(razaSeleccionada.habilidades);
+                setPoderes(razaSeleccionada.poderes);
+                setHabilidad1('');
+                setHabilidad2('');
+                setPoder('');
+            }
+        }
+    }, [raza, razas]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const nuevoPersonaje = {
             nombre_personaje: personaje,
             raza_id: raza,
             nivel: nivel,
+            habilidades: [habilidad1, habilidad2],
+            poderes: [poder]
         };
 
         axios.post('http://localhost:3001/api/personajes', nuevoPersonaje)
@@ -27,7 +47,10 @@ const CreateCharacter = () => {
                 setPersonajeCreado(response.data);
                 setPersonaje('');
                 setRaza('');
-                setNivel(1); 
+                setNivel(1);
+                setHabilidad1('');
+                setHabilidad2('');
+                setPoder('');
             })
             .catch(error => console.error(error));
     };
@@ -53,6 +76,45 @@ const CreateCharacter = () => {
                         <option key={r._id} value={r._id}>{r.nombre}</option>
                     ))}
                 </select>
+                <div>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidad 1</h3>
+                    <select
+                        value={habilidad1}
+                        onChange={(e) => setHabilidad1(e.target.value)}
+                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
+                    >
+                        <option value="">Selecciona una Habilidad</option>
+                        {habilidades.map((h, index) => (
+                            <option key={index} value={h.nombre}>{h.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidad 2</h3>
+                    <select
+                        value={habilidad2}
+                        onChange={(e) => setHabilidad2(e.target.value)}
+                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
+                    >
+                        <option value="">Selecciona una Habilidad</option>
+                        {habilidades.map((h, index) => (
+                            <option key={index} value={h.nombre}>{h.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold mb-2">Selecciona un Poder</h3>
+                    <select
+                        value={poder}
+                        onChange={(e) => setPoder(e.target.value)}
+                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
+                    >
+                        <option value="">Selecciona un Poder</option>
+                        {poderes.map((p, index) => (
+                            <option key={index} value={p.nombre}>{p.nombre}</option>
+                        ))}
+                    </select>
+                </div>
                 <button type="submit" className="p-3 w-full bg-blue-500 rounded-md text-white hover:bg-blue-700">
                     Crear Personaje
                 </button>
@@ -64,8 +126,8 @@ const CreateCharacter = () => {
                     <p><strong>Nombre del Personaje:</strong> {personajeCreado.nombre_personaje}</p>
                     <p><strong>Raza:</strong> {razas.find(r => r._id === personajeCreado.raza_id)?.nombre}</p>
                     <p><strong>Nivel:</strong> {personajeCreado.nivel}</p>
-                    <p><strong>Poderes:</strong> {razas.find(r => r._id === personajeCreado.raza_id)?.poderes.map(p => p.nombre).join(', ')}</p>
-                    <p><strong>Habilidades:</strong> {razas.find(r => r._id === personajeCreado.raza_id)?.habilidades.map(h => h.nombre).join(', ')}</p>
+                    <p><strong>Poderes:</strong> {personajeCreado.poderes.join(', ')}</p>
+                    <p><strong>Habilidades:</strong> {personajeCreado.habilidades.join(', ')}</p>
                 </div>
             )}
         </div>
