@@ -21,6 +21,13 @@ const RazaSchema = new mongoose.Schema({
 
 const Raza = mongoose.model('Raza', RazaSchema);
 
+const EquipamientoSchema = new mongoose.Schema({
+    nombre: String,
+    tipo: String
+});
+
+const Equipamiento = mongoose.model('Equipamiento', EquipamientoSchema);
+
 const PersonajeSchema = new mongoose.Schema({
     usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
     nombre_personaje: String,
@@ -28,8 +35,16 @@ const PersonajeSchema = new mongoose.Schema({
     nivel: { type: Number, default: 1 },
     estado: { type: String, default: 'Vivo' },
     habilidades: [{ type: String }],
-    equipamiento: [{ type: String }],
-    poderes: [{ type: String }]
+    poderes: [{ type: String }],
+    equipamientos: {
+        anillo: String,
+        collar: String,
+        armadura: String,
+        piernas: String,
+        brazeras: String,
+        casco: String,
+        botas: String
+    }
 });
 
 const Personaje = mongoose.model('Personaje', PersonajeSchema);
@@ -87,7 +102,6 @@ app.post('/api/personajes', async (req, res) => {
     }
 });
 
-// Ruta para obtener todos los personajes
 app.get('/api/personajes', async (req, res) => {
     try {
         const personajes = await Personaje.find().populate('raza_id');
@@ -103,6 +117,15 @@ app.get('/api/razas', async (req, res) => {
         res.json(razas);
     } catch (err) {
         res.status(500).json({ error: 'Error al obtener razas' });
+    }
+});
+
+app.get('/api/equipamientos', async (req, res) => {
+    try {
+        const equipamientos = await Equipamiento.find();
+        res.json(equipamientos);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener equipamientos' });
     }
 });
 

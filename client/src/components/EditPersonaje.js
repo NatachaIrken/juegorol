@@ -9,8 +9,18 @@ const EditPersonaje = () => {
     const [razas, setRazas] = useState([]);
     const [habilidades, setHabilidades] = useState([]);
     const [poderes, setPoderes] = useState([]);
+    const [equipamientos, setEquipamientos] = useState([]);
     const [habilidadesSeleccionadas, setHabilidadesSeleccionadas] = useState([]);
     const [poderesSeleccionados, setPoderesSeleccionados] = useState([]);
+    const [equipamientoSeleccionado, setEquipamientoSeleccionado] = useState({
+        anillo: "",
+        collar: "",
+        armadura: "",
+        piernas: "",
+        brazeras: "",
+        casco: "",
+        botas: ""
+    });
 
     useEffect(() => {
         const fetchPersonaje = async () => {
@@ -20,6 +30,15 @@ const EditPersonaje = () => {
                 setPersonaje(personajeData);
                 setHabilidadesSeleccionadas(personajeData.habilidades);
                 setPoderesSeleccionados(personajeData.poderes);
+                setEquipamientoSeleccionado(personajeData.equipamiento || {
+                    anillo: "",
+                    collar: "",
+                    armadura: "",
+                    piernas: "",
+                    brazeras: "",
+                    casco: "",
+                    botas: ""
+                });
             } catch (error) {
                 console.error('Error al obtener personaje:', error);
             }
@@ -34,8 +53,18 @@ const EditPersonaje = () => {
             }
         };
 
+        const fetchEquipamientos = async () => {
+            try {
+                const response = await axios.get('http://localhost:3001/api/equipamientos');
+                setEquipamientos(response.data);
+            } catch (error) {
+                console.error('Error al obtener equipamientos:', error);
+            }
+        };
+
         fetchPersonaje();
         fetchRazas();
+        fetchEquipamientos();
     }, [id]);
 
     useEffect(() => {
@@ -53,6 +82,11 @@ const EditPersonaje = () => {
         setPersonaje({ ...personaje, [name]: value });
     };
 
+    const handleEquipamientoChange = (e) => {
+        const { name, value } = e.target;
+        setEquipamientoSeleccionado({ ...equipamientoSeleccionado, [name]: value });
+    };
+
     const handleSave = async (e) => {
         e.preventDefault();
         try {
@@ -60,6 +94,7 @@ const EditPersonaje = () => {
                 ...personaje,
                 habilidades: habilidadesSeleccionadas,
                 poderes: poderesSeleccionados,
+                equipamiento: equipamientoSeleccionado
             });
             navigate('/');
         } catch (error) {
@@ -162,6 +197,26 @@ const EditPersonaje = () => {
                             />
                             {p.nombre}
                         </label>
+                    ))}
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-xl font-bold mb-2">Selecciona Equipamiento</h3>
+                    {["anillo", "collar", "armadura", "piernas", "brazeras", "casco", "botas"].map(tipo => (
+                        <div key={tipo} className="mb-4">
+                            <label className="block text-black mb-2" htmlFor={tipo}>{tipo.charAt(0).toUpperCase() + tipo.slice(1)}</label>
+                            <select
+                                id={tipo}
+                                name={tipo}
+                                value={equipamientoSeleccionado[tipo]}
+                                onChange={handleEquipamientoChange}
+                                className="w-full p-2 border border-gray-300 rounded"
+                            >
+                                <option value="">Selecciona un {tipo}</option>
+                                {equipamientos.filter(e => e.tipo === tipo).map((e) => (
+                                    <option key={e.nombre} value={e.nombre}>{e.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
                     ))}
                 </div>
                 <button
