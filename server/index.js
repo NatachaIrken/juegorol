@@ -77,34 +77,53 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-app.post('/api/personajes', (req, res) => {
-    const nuevoPersonaje = new Personaje(req.body);
-    nuevoPersonaje.save()
-        .then(personaje => res.json(personaje))
-        .catch(err => res.status(400).json({ error: err.message }));
-});
-
-app.get('/api/razas', async (req, res) => {
-  try {
-      const razas = await Raza.find();
-      res.json(razas);
-  } catch (err) {
-      res.status(500).json({ error: 'Error al obtener razas' });
-  }
-});
-
-app.get('/api/personajes/:usuario_id', async (req, res) => {
+app.post('/api/personajes', async (req, res) => {
     try {
-        const personajes = await Personaje.find({ usuario_id: req.params.usuario_id });
+        const nuevoPersonaje = new Personaje(req.body);
+        const personaje = await nuevoPersonaje.save();
+        res.json(personaje);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// Ruta para obtener todos los personajes
+app.get('/api/personajes', async (req, res) => {
+    try {
+        const personajes = await Personaje.find().populate('raza_id');
         res.json(personajes);
     } catch (err) {
         res.status(500).json({ error: 'Error al obtener personajes' });
     }
 });
 
+app.get('/api/razas', async (req, res) => {
+    try {
+        const razas = await Raza.find();
+        res.json(razas);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener razas' });
+    }
+});
+
+app.get('/api/personajes/:id', async (req, res) => {
+    try {
+        const personaje = await Personaje.findById(req.params.id).populate('raza_id');
+        if (!personaje) {
+            return res.status(404).json({ error: 'Personaje no encontrado' });
+        }
+        res.json(personaje);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener el personaje' });
+    }
+});
+
 app.put('/api/personajes/:id', async (req, res) => {
     try {
-        const personaje = await Personaje.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const personaje = await Personaje.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('raza_id');
+        if (!personaje) {
+            return res.status(404).json({ error: 'Personaje no encontrado' });
+        }
         res.json(personaje);
     } catch (err) {
         res.status(400).json({ error: 'Error al actualizar personaje' });
@@ -113,7 +132,10 @@ app.put('/api/personajes/:id', async (req, res) => {
 
 app.delete('/api/personajes/:id', async (req, res) => {
     try {
-        await Personaje.findByIdAndDelete(req.params.id);
+        const personaje = await Personaje.findByIdAndDelete(req.params.id);
+        if (!personaje) {
+            return res.status(404).json({ error: 'Personaje no encontrado' });
+        }
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Error al eliminar personaje' });
@@ -123,6 +145,9 @@ app.delete('/api/personajes/:id', async (req, res) => {
 app.get('/api/personajes/:id/pdf', async (req, res) => {
     try {
         const personaje = await Personaje.findById(req.params.id).populate('raza_id').exec();
+        if (!personaje) {
+            return res.status(404).json({ error: 'Personaje no encontrado' });
+        }
         const contenidoHTML = `
             <h1>Informe de Personaje</h1>
             <p><strong>Nombre:</strong> ${personaje.nombre_personaje}</p>

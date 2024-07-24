@@ -3,18 +3,24 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const EditPersonaje = () => {
-    const { personajeId } = useParams();
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [personaje, setPersonaje] = useState(null);
     const [razas, setRazas] = useState([]);
-    const navigate = useNavigate();
+    const [habilidades, setHabilidades] = useState('');
+    const [equipamiento, setEquipamiento] = useState('');
+    const [poderes, setPoderes] = useState('');
 
     useEffect(() => {
         const fetchPersonaje = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/api/personajes/${personajeId}`);
+                const response = await axios.get(`http://localhost:3001/api/personajes/${id}`);
                 setPersonaje(response.data);
+                setHabilidades(response.data.habilidades.join(', '));
+                setEquipamiento(response.data.equipamiento.join(', '));
+                setPoderes(response.data.poderes.join(', '));
             } catch (error) {
-                console.error('Error al obtener el personaje:', error);
+                console.error('Error al obtener personaje:', error);
             }
         };
 
@@ -23,39 +29,30 @@ const EditPersonaje = () => {
                 const response = await axios.get('http://localhost:3001/api/razas');
                 setRazas(response.data);
             } catch (error) {
-                console.error('Error al obtener las razas:', error);
+                console.error('Error al obtener razas:', error);
             }
         };
 
         fetchPersonaje();
         fetchRazas();
-    }, [personajeId]);
+    }, [id]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setPersonaje((prevPersonaje) => ({
-            ...prevPersonaje,
-            [name]: value,
-        }));
+        setPersonaje({ ...personaje, [name]: value });
     };
 
-    const handleCheckboxChange = (e, type) => {
-        const { value, checked } = e.target;
-        setPersonaje((prevPersonaje) => {
-            const updatedList = checked
-                ? [...prevPersonaje[type], value]
-                : prevPersonaje[type].filter((item) => item !== value);
-            return { ...prevPersonaje, [type]: updatedList };
-        });
-    };
-
-    const handleGuardarCambios = async (e) => {
-        e.preventDefault();
+    const handleSave = async () => {
         try {
-            await axios.put(`http://localhost:3001/api/personajes/${personajeId}`, personaje);
-            navigate('/main');
+            await axios.put(`http://localhost:3001/api/personajes/${id}`, {
+                ...personaje,
+                habilidades: habilidades.split(',').map(hab => hab.trim()),
+                equipamiento: equipamiento.split(',').map(eq => eq.trim()),
+                poderes: poderes.split(',').map(pod => pod.trim()),
+            });
+            navigate('/');
         } catch (error) {
-            console.error('Error al guardar cambios:', error);
+            console.error('Error al actualizar personaje:', error);
         }
     };
 
@@ -64,62 +61,92 @@ const EditPersonaje = () => {
     return (
         <div className="container mx-auto p-6">
             <h1 className="text-2xl font-bold mb-6">Editar Personaje</h1>
-            <form onSubmit={handleGuardarCambios} className="mb-8">
-                <input
-                    type="text"
-                    name="nombre_personaje"
-                    value={personaje.nombre_personaje}
-                    onChange={handleInputChange}
-                    placeholder="Nombre del Personaje"
-                    className="w-full p-2 mb-2 border border-gray-300 rounded"
-                />
-                <select
-                    name="raza_id"
-                    value={personaje.raza_id}
-                    onChange={handleInputChange}
-                    className="w-full p-2 mb-2 border border-gray-300 rounded"
+            <form onSubmit={handleSave}>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="nombre_personaje">Nombre del Personaje</label>
+                    <input
+                        type="text"
+                        id="nombre_personaje"
+                        name="nombre_personaje"
+                        value={personaje.nombre_personaje}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="raza_id">Raza</label>
+                    <select
+                        id="raza_id"
+                        name="raza_id"
+                        value={personaje.raza_id._id}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    >
+                        {razas.map((raza) => (
+                            <option key={raza._id} value={raza._id}>{raza.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="nivel">Nivel</label>
+                    <input
+                        type="number"
+                        id="nivel"
+                        name="nivel"
+                        value={personaje.nivel}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="estado">Estado</label>
+                    <input
+                        type="text"
+                        id="estado"
+                        name="estado"
+                        value={personaje.estado}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="habilidades">Habilidades</label>
+                    <input
+                        type="text"
+                        id="habilidades"
+                        name="habilidades"
+                        value={habilidades}
+                        onChange={(e) => setHabilidades(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="equipamiento">Equipamiento</label>
+                    <input
+                        type="text"
+                        id="equipamiento"
+                        name="equipamiento"
+                        value={equipamiento}
+                        onChange={(e) => setEquipamiento(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-white mb-2" htmlFor="poderes">Poderes</label>
+                    <input
+                        type="text"
+                        id="poderes"
+                        name="poderes"
+                        value={poderes}
+                        onChange={(e) => setPoderes(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                    <option value="">Seleccionar Raza</option>
-                    {razas.map((raza) => (
-                        <option key={raza._id} value={raza._id}>
-                            {raza.nombre}
-                        </option>
-                    ))}
-                </select>
-                {personaje.raza_id && (
-                    <>
-                        <fieldset className="mb-2">
-                            <legend className="mb-1 font-semibold">Seleccionar Poderes</legend>
-                            {razas.find((raza) => raza._id === personaje.raza_id).poderes.map((poder, index) => (
-                                <label key={index} className="block">
-                                    <input
-                                        type="checkbox"
-                                        value={poder.nombre}
-                                        checked={personaje.poderes.includes(poder.nombre)}
-                                        onChange={(e) => handleCheckboxChange(e, 'poderes')}
-                                    />
-                                    {poder.nombre}
-                                </label>
-                            ))}
-                        </fieldset>
-                        <fieldset className="mb-4">
-                            <legend className="mb-1 font-semibold">Seleccionar Habilidades</legend>
-                            {razas.find((raza) => raza._id === personaje.raza_id).habilidades.map((habilidad, index) => (
-                                <label key={index} className="block">
-                                    <input
-                                        type="checkbox"
-                                        value={habilidad.nombre}
-                                        checked={personaje.habilidades.includes(habilidad.nombre)}
-                                        onChange={(e) => handleCheckboxChange(e, 'habilidades')}
-                                    />
-                                    {habilidad.nombre}
-                                </label>
-                            ))}
-                        </fieldset>
-                    </>
-                )}
-                <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg">
-                    Guardar Cambios
+                    Guardar
                 </button>
             </form>
         </div>

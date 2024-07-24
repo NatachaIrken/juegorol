@@ -27,7 +27,7 @@ const App = () => {
                     <Route path="/create-character" element={usuario ? <CreateCharacter /> : <Navigate replace to="/login" />} />
                     <Route path="/manage-characters" element={usuario ? <ManageCharacters usuario={usuario} /> : <Navigate replace to="/login" />} />
                     <Route path="/register-user" element={<RegisterUser />} />
-                    <Route path="/edit-character/:id" element={usuario ? <EditCharacter /> : <Navigate replace to="/login" />} />
+                    <Route path="/edit-personaje/:id" element={usuario ? <EditCharacter /> : <Navigate replace to="/login" />} />
                 </Routes>
             </div>
         </Router>
