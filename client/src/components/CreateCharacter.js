@@ -55,14 +55,14 @@ const CreateCharacter = () => {
     const handleHabilidadChange = (e) => {
         const { value, checked } = e.target;
         setHabilidadesSeleccionadas(prev =>
-            checked ? [...prev, value] : prev.filter(h => h !== value)
+            checked ? [...prev, value].slice(0, 2) : prev.filter(h => h !== value)
         );
     };
 
     const handlePoderChange = (e) => {
         const { value, checked } = e.target;
         setPoderesSeleccionados(prev =>
-            checked ? [...prev, value] : prev.filter(p => p !== value)
+            checked ? [...prev, value].slice(0, 1) : prev.filter(p => p !== value)
         );
     };
 
@@ -75,12 +75,12 @@ const CreateCharacter = () => {
                     value={personaje}
                     onChange={(e) => setPersonaje(e.target.value)}
                     placeholder="Nombre del Personaje"
-                    className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
+                    className="p-3 w-full rounded-md bg-gray-800 text-black border border-gray-600 focus:border-blue-500 focus:outline-none"
                 />
                 <select
                     value={raza}
                     onChange={(e) => setRaza(e.target.value)}
-                    className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
+                    className="p-3 w-full rounded-md bg-gray-800 text-black border border-gray-600 focus:border-blue-500 focus:outline-none"
                 >
                     <option value="">Selecciona una Raza</option>
                     {razas.map((r) => (
@@ -88,28 +88,30 @@ const CreateCharacter = () => {
                     ))}
                 </select>
                 <div>
-                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidades</h3>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidades (Max 2)</h3>
                     {habilidades.map((h) => (
-                        <label key={h.nombre} className="block">
+                        <label key={h.nombre} className="block text-black">
                             <input
                                 type="checkbox"
                                 value={h.nombre}
                                 checked={habilidadesSeleccionadas.includes(h.nombre)}
                                 onChange={handleHabilidadChange}
+                                disabled={!habilidadesSeleccionadas.includes(h.nombre) && habilidadesSeleccionadas.length >= 2}
                             />
                             {h.nombre}
                         </label>
                     ))}
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold mb-2">Selecciona Poderes</h3>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Poderes (Max 1)</h3>
                     {poderes.map((p) => (
-                        <label key={p.nombre} className="block">
+                        <label key={p.nombre} className="block text-black">
                             <input
                                 type="checkbox"
                                 value={p.nombre}
                                 checked={poderesSeleccionados.includes(p.nombre)}
                                 onChange={handlePoderChange}
+                                disabled={!poderesSeleccionados.includes(p.nombre) && poderesSeleccionados.length >= 1}
                             />
                             {p.nombre}
                         </label>

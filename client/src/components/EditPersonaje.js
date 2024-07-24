@@ -7,18 +7,19 @@ const EditPersonaje = () => {
     const navigate = useNavigate();
     const [personaje, setPersonaje] = useState(null);
     const [razas, setRazas] = useState([]);
-    const [habilidades, setHabilidades] = useState('');
-    const [equipamiento, setEquipamiento] = useState('');
-    const [poderes, setPoderes] = useState('');
+    const [habilidades, setHabilidades] = useState([]);
+    const [poderes, setPoderes] = useState([]);
+    const [habilidadesSeleccionadas, setHabilidadesSeleccionadas] = useState([]);
+    const [poderesSeleccionados, setPoderesSeleccionados] = useState([]);
 
     useEffect(() => {
         const fetchPersonaje = async () => {
             try {
                 const response = await axios.get(`http://localhost:3001/api/personajes/${id}`);
-                setPersonaje(response.data);
-                setHabilidades(response.data.habilidades.join(', '));
-                setEquipamiento(response.data.equipamiento.join(', '));
-                setPoderes(response.data.poderes.join(', '));
+                const personajeData = response.data;
+                setPersonaje(personajeData);
+                setHabilidadesSeleccionadas(personajeData.habilidades);
+                setPoderesSeleccionados(personajeData.poderes);
             } catch (error) {
                 console.error('Error al obtener personaje:', error);
             }
@@ -37,18 +38,28 @@ const EditPersonaje = () => {
         fetchRazas();
     }, [id]);
 
+    useEffect(() => {
+        if (personaje && personaje.raza_id) {
+            const razaSeleccionada = razas.find(r => r._id === personaje.raza_id._id);
+            if (razaSeleccionada) {
+                setHabilidades(razaSeleccionada.habilidades);
+                setPoderes(razaSeleccionada.poderes);
+            }
+        }
+    }, [personaje, razas]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setPersonaje({ ...personaje, [name]: value });
     };
 
-    const handleSave = async () => {
+    const handleSave = async (e) => {
+        e.preventDefault();
         try {
             await axios.put(`http://localhost:3001/api/personajes/${id}`, {
                 ...personaje,
-                habilidades: habilidades.split(',').map(hab => hab.trim()),
-                equipamiento: equipamiento.split(',').map(eq => eq.trim()),
-                poderes: poderes.split(',').map(pod => pod.trim()),
+                habilidades: habilidadesSeleccionadas,
+                poderes: poderesSeleccionados,
             });
             navigate('/');
         } catch (error) {
@@ -56,14 +67,28 @@ const EditPersonaje = () => {
         }
     };
 
+    const handleHabilidadChange = (e) => {
+        const { value, checked } = e.target;
+        setHabilidadesSeleccionadas(prev =>
+            checked ? [...prev, value].slice(0, 6) : prev.filter(h => h !== value)
+        );
+    };
+
+    const handlePoderChange = (e) => {
+        const { value, checked } = e.target;
+        setPoderesSeleccionados(prev =>
+            checked ? [...prev, value].slice(0, 4) : prev.filter(p => p !== value)
+        );
+    };
+
     if (!personaje) return <div>Cargando...</div>;
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-6 text-black">
             <h1 className="text-2xl font-bold mb-6">Editar Personaje</h1>
             <form onSubmit={handleSave}>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="nombre_personaje">Nombre del Personaje</label>
+                    <label className="block text-black mb-2" htmlFor="nombre_personaje">Nombre del Personaje</label>
                     <input
                         type="text"
                         id="nombre_personaje"
@@ -74,7 +99,7 @@ const EditPersonaje = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="raza_id">Raza</label>
+                    <label className="block text-black mb-2" htmlFor="raza_id">Raza</label>
                     <select
                         id="raza_id"
                         name="raza_id"
@@ -88,7 +113,7 @@ const EditPersonaje = () => {
                     </select>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="nivel">Nivel</label>
+                    <label className="block text-black mb-2" htmlFor="nivel">Nivel</label>
                     <input
                         type="number"
                         id="nivel"
@@ -99,7 +124,7 @@ const EditPersonaje = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="estado">Estado</label>
+                    <label className="block text-black mb-2" htmlFor="estado">Estado</label>
                     <input
                         type="text"
                         id="estado"
@@ -110,37 +135,34 @@ const EditPersonaje = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="habilidades">Habilidades</label>
-                    <input
-                        type="text"
-                        id="habilidades"
-                        name="habilidades"
-                        value={habilidades}
-                        onChange={(e) => setHabilidades(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
+                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidades (Max 6)</h3>
+                    {habilidades.map((h) => (
+                        <label key={h.nombre} className="block text-black">
+                            <input
+                                type="checkbox"
+                                value={h.nombre}
+                                checked={habilidadesSeleccionadas.includes(h.nombre)}
+                                onChange={handleHabilidadChange}
+                                disabled={!habilidadesSeleccionadas.includes(h.nombre) && habilidadesSeleccionadas.length >= 6}
+                            />
+                            {h.nombre}
+                        </label>
+                    ))}
                 </div>
                 <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="equipamiento">Equipamiento</label>
-                    <input
-                        type="text"
-                        id="equipamiento"
-                        name="equipamiento"
-                        value={equipamiento}
-                        onChange={(e) => setEquipamiento(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-white mb-2" htmlFor="poderes">Poderes</label>
-                    <input
-                        type="text"
-                        id="poderes"
-                        name="poderes"
-                        value={poderes}
-                        onChange={(e) => setPoderes(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
+                    <h3 className="text-xl font-bold mb-2">Selecciona Poderes (Max 4)</h3>
+                    {poderes.map((p) => (
+                        <label key={p.nombre} className="block text-black">
+                            <input
+                                type="checkbox"
+                                value={p.nombre}
+                                checked={poderesSeleccionados.includes(p.nombre)}
+                                onChange={handlePoderChange}
+                                disabled={!poderesSeleccionados.includes(p.nombre) && poderesSeleccionados.length >= 4}
+                            />
+                            {p.nombre}
+                        </label>
+                    ))}
                 </div>
                 <button
                     type="submit"
