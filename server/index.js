@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const pdf = require('html-pdf'); // Para la generación de PDFs
+
 const app = express();
 
 app.use(cors());
@@ -17,89 +20,6 @@ const RazaSchema = new mongoose.Schema({
 });
 
 const Raza = mongoose.model('Raza', RazaSchema);
-
-const RazasIniciales = [
-  { 
-    nombre: 'Humano',
-    poderes: [
-      { nombre: 'Curación Rápida', detalle: 'Permite una recuperación acelerada de heridas' },
-      { nombre: 'Inspiración', detalle: 'Aumenta la moral y el rendimiento de aliados cercanos' },
-      { nombre: 'Resistencia', detalle: 'Aumenta la resistencia física durante un tiempo' },
-      { nombre: 'Adaptabilidad', detalle: 'Mejora la capacidad de adaptarse a diferentes entornos' }
-    ],
-    habilidades: [
-      { nombre: 'Diplomacia', detalle: 'Mejora la capacidad para negociar y resolver conflictos' },
-      { nombre: 'Liderazgo', detalle: 'Aumenta la capacidad para liderar grupos' },
-      { nombre: 'Estrategia', detalle: 'Mejora la planificación y ejecución de tácticas' },
-      { nombre: 'Alquimia', detalle: 'Permite la creación de pociones y brebajes' },
-      { nombre: 'Caza', detalle: 'Mejora la habilidad para rastrear y cazar animales' },
-      { nombre: 'Comercio', detalle: 'Aumenta la habilidad para el comercio y la negociación' },
-      { nombre: 'Primeros Auxilios', detalle: 'Mejora la capacidad para sanar heridas leves' },
-      { nombre: 'Exploración', detalle: 'Aumenta la capacidad para explorar y cartografiar nuevas áreas' }
-    ]
-  },
-  { 
-    nombre: 'Elfo',
-    poderes: [
-      { nombre: 'Flecha Mágica', detalle: 'Dispara una flecha con precisión mágica' },
-      { nombre: 'Visión Nocturna', detalle: 'Permite ver en la oscuridad total' },
-      { nombre: 'Caminata Silenciosa', detalle: 'Permite moverse sin hacer ruido' },
-      { nombre: 'Comunión con la Naturaleza', detalle: 'Permite comunicarse con animales y plantas' }
-    ],
-    habilidades: [
-      { nombre: 'Arquería', detalle: 'Mejora la precisión y daño con arcos' },
-      { nombre: 'Herboristería', detalle: 'Permite la recolección y uso de plantas medicinales' },
-      { nombre: 'Magia Arcana', detalle: 'Aumenta la habilidad para usar magia antigua' },
-      { nombre: 'Sigilo', detalle: 'Mejora la capacidad para moverse sin ser detectado' },
-      { nombre: 'Canto Élfico', detalle: 'Permite usar la música para influir en el entorno' },
-      { nombre: 'Equitación', detalle: 'Mejora la capacidad para montar y controlar animales' },
-      { nombre: 'Visión Aguda', detalle: 'Aumenta la capacidad para ver a largas distancias' },
-      { nombre: 'Danza de la Espada', detalle: 'Mejora la destreza en el combate con espadas' }
-    ]
-  },
-  { 
-    nombre: 'Enano',
-    poderes: [
-      { nombre: 'Fuerza Sobrehumana', detalle: 'Aumenta la fuerza física temporalmente' },
-      { nombre: 'Piel de Piedra', detalle: 'Endurece la piel como si fuera piedra' },
-      { nombre: 'Martillo Trueno', detalle: 'Golpe con un martillo que causa un impacto sónico' },
-      { nombre: 'Resistencia al Fuego', detalle: 'Aumenta la resistencia a altas temperaturas y llamas' }
-    ],
-    habilidades: [
-      { nombre: 'Minería', detalle: 'Mejora la capacidad para extraer minerales' },
-      { nombre: 'Forja', detalle: 'Permite la creación de armas y armaduras' },
-      { nombre: 'Ingeniería', detalle: 'Mejora la capacidad para construir y reparar mecanismos' },
-      { nombre: 'Resistencia Física', detalle: 'Aumenta la capacidad para soportar trabajos duros' },
-      { nombre: 'Cerveza Enana', detalle: 'Permite la creación de bebidas alcohólicas potentes' },
-      { nombre: 'Defensa', detalle: 'Mejora la capacidad para bloquear y resistir ataques' },
-      { nombre: 'Túneles', detalle: 'Aumenta la habilidad para excavar y construir túneles' },
-      { nombre: 'Topografía', detalle: 'Mejora la capacidad para leer y crear mapas subterráneos' }
-    ]
-  },
-  { 
-    nombre: 'Orco',
-    poderes: [
-      { nombre: 'Rabia Berserker', detalle: 'Aumenta el daño y la velocidad de ataque' },
-      { nombre: 'Grito de Guerra', detalle: 'Intimida a los enemigos cercanos' },
-      { nombre: 'Regeneración Rápida', detalle: 'Cura heridas a un ritmo acelerado' },
-      { nombre: 'Golpe Aplastante', detalle: 'Un golpe que causa un daño devastador al objetivo' }
-    ],
-    habilidades: [
-      { nombre: 'Combate Cuerpo a Cuerpo', detalle: 'Mejora la habilidad en el combate cercano' },
-      { nombre: 'Supervivencia', detalle: 'Aumenta la capacidad para sobrevivir en entornos hostiles' },
-      { nombre: 'Intimidación', detalle: 'Mejora la capacidad para asustar y dominar a otros' },
-      { nombre: 'Caza Mayor', detalle: 'Mejora la habilidad para cazar grandes presas' },
-      { nombre: 'Resistencia al Dolor', detalle: 'Aumenta la capacidad para resistir el dolor' },
-      { nombre: 'Ataque Salvaje', detalle: 'Mejora la ferocidad y daño en el combate' },
-      { nombre: 'Pelea con Armas', detalle: 'Aumenta la habilidad para usar diversas armas' },
-      { nombre: 'Liderazgo Tribal', detalle: 'Mejora la capacidad para liderar tribus y clanes' }
-    ]
-  }
-];
-
-Raza.insertMany(RazasIniciales)
-  .then(() => console.log('Razas insertadas correctamente con poderes y habilidades'))
-  .catch(err => console.error('Error al insertar razas con poderes y habilidades:', err));
 
 const PersonajeSchema = new mongoose.Schema({
     usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
@@ -124,24 +44,37 @@ const UsuarioSchema = new mongoose.Schema({
 
 const Usuario = mongoose.model('Usuario', UsuarioSchema);
 
-app.post('/api/usuarios', (req, res) => {
-    const nuevoUsuario = new Usuario(req.body);
-    nuevoUsuario.save()
-        .then(usuario => res.json(usuario))
-        .catch(err => res.status(400).json({ error: err.message }));
+app.post('/api/usuarios', async (req, res) => {
+    try {
+        const { nombre, apellidos, email, nombre_usuario, contrasena } = req.body;
+        const hashedPassword = await bcrypt.hash(contrasena, 10);
+        const nuevoUsuario = new Usuario({ nombre, apellidos, email, nombre_usuario, contrasena: hashedPassword });
+        const usuario = await nuevoUsuario.save();
+        res.json(usuario);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 });
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
-    Usuario.findOne({ nombre_usuario, contrasena })
-        .then(usuario => {
-            if (usuario) {
-                res.json({ success: true, usuario });
-            } else {
-                res.json({ success: false });
-            }
-        })
-        .catch(err => res.status(500).json({ error: err.message }));
+
+    try {
+        const usuario = await Usuario.findOne({ nombre_usuario });
+        if (!usuario) {
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
+
+        const isMatch = await bcrypt.compare(contrasena, usuario.contrasena);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
+        }
+
+        res.status(200).json({ success: true, usuario });
+    } catch (err) {
+        console.error('Error en el login:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
 
 app.post('/api/personajes', (req, res) => {
@@ -158,6 +91,55 @@ app.get('/api/razas', async (req, res) => {
   } catch (err) {
       res.status(500).json({ error: 'Error al obtener razas' });
   }
+});
+
+app.get('/api/personajes/:usuario_id', async (req, res) => {
+    try {
+        const personajes = await Personaje.find({ usuario_id: req.params.usuario_id });
+        res.json(personajes);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener personajes' });
+    }
+});
+
+app.put('/api/personajes/:id', async (req, res) => {
+    try {
+        const personaje = await Personaje.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(personaje);
+    } catch (err) {
+        res.status(400).json({ error: 'Error al actualizar personaje' });
+    }
+});
+
+app.delete('/api/personajes/:id', async (req, res) => {
+    try {
+        await Personaje.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al eliminar personaje' });
+    }
+});
+
+app.get('/api/personajes/:id/pdf', async (req, res) => {
+    try {
+        const personaje = await Personaje.findById(req.params.id).populate('raza_id').exec();
+        const contenidoHTML = `
+            <h1>Informe de Personaje</h1>
+            <p><strong>Nombre:</strong> ${personaje.nombre_personaje}</p>
+            <p><strong>Raza:</strong> ${personaje.raza_id.nombre}</p>
+            <p><strong>Nivel:</strong> ${personaje.nivel}</p>
+            <p><strong>Estado:</strong> ${personaje.estado}</p>
+            <p><strong>Poderes:</strong> ${personaje.poderes.join(', ')}</p>
+            <p><strong>Habilidades:</strong> ${personaje.habilidades.join(', ')}</p>
+        `;
+        pdf.create(contenidoHTML).toStream((err, stream) => {
+            if (err) return res.status(500).json({ error: 'Error al generar PDF' });
+            res.setHeader('Content-type', 'application/pdf');
+            stream.pipe(res);
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener personaje' });
+    }
 });
 
 const PORT = 3001;

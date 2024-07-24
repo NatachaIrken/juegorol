@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import CreateCharacter from './components/CreateCharacter';
 import ManageCharacters from './components/ManageCharacters';
-import EditCharacter from './components/EditCharacter';
+import EditCharacter from './components/EditPersonaje'; 
 import RegisterUser from './components/RegisterUser';
 import Login from './components/Login';
 import './index.css';

@@ -1,0 +1,152 @@
+[
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156b8" },
+        "nombre": "Elfo",
+        "poderes": [
+            { "nombre": "Visión nocturna" },
+            { "nombre": "Inmunidad a enfermedades" },
+            { "nombre": "Longevidad" },
+            { "nombre": "Telepatía" },
+            { "nombre": "Control de la naturaleza" },
+            { "nombre": "Magia elemental" },
+            { "nombre": "Curación rápida" },
+            { "nombre": "Reflejos mejorados" },
+            { "nombre": "Sigilo absoluto" },
+            { "nombre": "Sentidos agudizados" }
+        ],
+        "habilidades": [
+            { "nombre": "Arquería" },
+            { "nombre": "Sigilo" },
+            { "nombre": "Espionaje" },
+            { "nombre": "Esgrima" },
+            { "nombre": "Herboristería" },
+            { "nombre": "Canto élfico" },
+            { "nombre": "Tiro con arco" },
+            { "nombre": "Montar a caballo" },
+            { "nombre": "Doma de animales" },
+            { "nombre": "Navegación" },
+            { "nombre": "Tácticas de combate" },
+            { "nombre": "Estrategia militar" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156b9" },
+        "nombre": "Orco",
+        "poderes": [
+            { "nombre": "Fuerza incrementada" },
+            { "nombre": "Resistencia a daños" },
+            { "nombre": "Regeneración" },
+            { "nombre": "Grito de batalla" },
+            { "nombre": "Visión infrarroja" },
+            { "nombre": "Sentido del olfato agudo" },
+            { "nombre": "Piel endurecida" },
+            { "nombre": "Inmunidad al veneno" },
+            { "nombre": "Aguante" },
+            { "nombre": "Combate frenético" }
+        ],
+        "habilidades": [
+            { "nombre": "Combate cuerpo a cuerpo" },
+            { "nombre": "Forja de armas" },
+            { "nombre": "Tácticas de guerra" },
+            { "nombre": "Supervivencia" },
+            { "nombre": "Caza" },
+            { "nombre": "Rastreo" },
+            { "nombre": "Montar bestias" },
+            { "nombre": "Minería" },
+            { "nombre": "Construcción de fortalezas" },
+            { "nombre": "Navegación en terrenos difíciles" },
+            { "nombre": "Recolección" },
+            { "nombre": "Pesca" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156ba" },
+        "nombre": "Humano",
+        "poderes": [
+            { "nombre": "Adaptabilidad" },
+            { "nombre": "Innovación" },
+            { "nombre": "Resistencia física" },
+            { "nombre": "Liderazgo" },
+            { "nombre": "Ingenio" },
+            { "nombre": "Variedad de habilidades" },
+            { "nombre": "Diplomacia" },
+            { "nombre": "Aprendizaje rápido" },
+            { "nombre": "Ambición" },
+            { "nombre": "Trabajo en equipo" }
+        ],
+        "habilidades": [
+            { "nombre": "Esgrima" },
+            { "nombre": "Equitación" },
+            { "nombre": "Tácticas militares" },
+            { "nombre": "Navegación" },
+            { "nombre": "Ingeniería" },
+            { "nombre": "Medicina" },
+            { "nombre": "Comercio" },
+            { "nombre": "Diplomacia" },
+            { "nombre": "Agricultura" },
+            { "nombre": "Construcción" },
+            { "nombre": "Caza" },
+            { "nombre": "Pesca" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156bb" },
+        "nombre": "Enano",
+        "poderes": [
+            { "nombre": "Fuerza incrementada" },
+            { "nombre": "Resistencia a daños" },
+            { "nombre": "Visión en la oscuridad" },
+            { "nombre": "Resistencia a la magia" },
+            { "nombre": "Longevidad" },
+            { "nombre": "Constitución robusta" },
+            { "nombre": "Regeneración" },
+            { "nombre": "Capacidad de minería" },
+            { "nombre": "Ingeniería avanzada" },
+            { "nombre": "Conocimiento de gemas" }
+        ],
+        "habilidades": [
+            { "nombre": "Minería" },
+            { "nombre": "Forja" },
+            { "nombre": "Construcción" },
+            { "nombre": "Esgrima" },
+            { "nombre": "Combate con hachas" },
+            { "nombre": "Navegación subterránea" },
+            { "nombre": "Carpintería" },
+            { "nombre": "Tácticas de guerra" },
+            { "nombre": "Herboristería" },
+            { "nombre": "Ingeniería" },
+            { "nombre": "Montar caballos" },
+            { "nombre": "Supervivencia" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156bc" },
+        "nombre": "Lagarto",
+        "poderes": [
+            { "nombre": "Regeneración" },
+            { "nombre": "Escamas duras" },
+            { "nombre": "Visión infrarroja" },
+            { "nombre": "Inmunidad a venenos" },
+            { "nombre": "Respiración subacuática" },
+            { "nombre": "Fuerza incrementada" },
+            { "nombre": "Agilidad" },
+            { "nombre": "Camuflaje" },
+            { "nombre": "Control del agua" },
+            { "nombre": "Comunicación con reptiles" }
+        ],
+        "habilidades": [
+            { "nombre": "Nado rápido" },
+            { "nombre": "Caza" },
+            { "nombre": "Supervivencia" },
+            { "nombre": "Combate cuerpo a cuerpo" },
+            { "nombre": "Pesca" },
+            { "nombre": "Escalada" },
+            { "nombre": "Tácticas de guerrilla" },
+            { "nombre": "Exploración" },
+            { "nombre": "Navegación" },
+            { "nombre": "Rastreo" },
+            { "nombre": "Herboristería" },
+            { "nombre": "Construcción" }
+        ]
+    }
+]

@@ -2,125 +2,48 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onLogin }) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+const Login = ({ onLogin }) => { // Asegúrate de que 'onLogin' se está recibiendo como prop
     const [errorMessage, setErrorMessage] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const nombre_usuario = e.target.elements.username.value;
-        const contrasena = e.target.elements.password.value;
-
+        const formData = new FormData(e.target);
+        const nombre_usuario = formData.get('nombre_usuario');
+        const contrasena = formData.get('contrasena');
+        
         try {
             const response = await axios.post('http://localhost:3001/api/login', { nombre_usuario, contrasena });
             if (response.data.success) {
-                const usuario = response.data.usuario;
-                if (onLogin) {
-                    onLogin(usuario);
-                }
-                setIsModalVisible(true);
-                setErrorMessage('');
+                onLogin(response.data.usuario); // Llama a la función pasada como prop
+                navigate('/create-character'); // Cambiado a '/create-character' en lugar de '/main'
             } else {
-                setErrorMessage('Usuario o contraseña incorrectos');
+                setErrorMessage('Nombre de usuario o contraseña incorrectos');
+                setIsModalVisible(true);
             }
         } catch (error) {
-            console.error(error);
-            setErrorMessage('Error al autenticar usuario');
+            console.error('Error al iniciar sesión:', error);
         }
     };
 
-    const handleCloseModal = () => {
-        setIsModalVisible(false);
-        navigate('/create-character');
-    };
-
     return (
-        <div style={styles.loginContainer}>
-            <form onSubmit={handleLogin} style={styles.form}>
-                <input type="text" name="username" placeholder="Usuario" required style={styles.input} />
-                <input type="password" name="password" placeholder="Contraseña" required style={styles.input} />
-                <button type="submit" style={styles.button}>Login</button>
-                {errorMessage && <p style={styles.error}>{errorMessage}</p>}
-            </form>
-            {isModalVisible && (
-                <div style={styles.modal}>
-                    <div style={styles.modalContent}>
-                        <p>Login exitoso. ¡Bienvenido!</p>
-                        <button style={styles.closeBtn} onClick={handleCloseModal}>Cerrar</button>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-6">
+            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Iniciar sesión</h2>
+                <form onSubmit={handleLogin} className="space-y-4">
+                    <input type="text" name="nombre_usuario" placeholder="Nombre de Usuario" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <input type="password" name="contrasena" placeholder="Contraseña" className="w-full p-3 rounded-lg border border-gray-300 text-gray-800" />
+                    <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition duration-150 ease-in-out">Login</button>
+                </form>
+                {isModalVisible && (
+                    <div className="text-center mt-4 text-red-500">
+                        {errorMessage}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
-};
-
-const styles = {
-  loginContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#1a202c', // Fondo oscuro
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  input: {
-    margin: '10px 0',
-    padding: '10px',
-    fontSize: '16px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    backgroundColor: '#2d3748', // Fondo oscuro para los inputs
-    color: 'white',
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    backgroundColor: '#2d3748', // Fondo del botón
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-  },
-  error: {
-    color: 'red',
-    marginTop: '10px',
-  },
-  modal: {
-    display: 'block',
-    position: 'fixed',
-    zIndex: 1,
-    left: 0,
-    top: 0,
-    width: '100%',
-    height: '100%',
-    overflow: 'auto',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    paddingTop: '60px',
-  },
-  modalContent: {
-    backgroundColor: '#2d3748', // Fondo oscuro para el modal
-    margin: '5% auto',
-    padding: '20px',
-    border: '1px solid #888',
-    width: '80%',
-    textAlign: 'center',
-    color: 'white',
-    borderRadius: '8px',
-  },
-  closeBtn: {
-    backgroundColor: '#e53e3e', // Botón de cerrar en rojo
-    color: 'white',
-    padding: '10px 20px',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '4px',
-  }
 };
 
 export default Login;

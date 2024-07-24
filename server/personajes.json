@@ -1,0 +1,34 @@
+[
+    {
+        "_id": { "$oid": "64b8e53c8f1b2c00123156ba" },
+        "nombre_personaje": "Legolas",
+        "raza_id": { "$oid": "64b8e53c8f1b2c00123156b8" },
+        "usuario_id": { "$oid": "64b8e53c8f1b2c00123156b7" },
+        "poderes": [
+            "Visión nocturna",
+            "Inmunidad a enfermedades",
+            "Longevidad",
+            "Telepatía",
+            "Control de la naturaleza",
+            "Magia elemental",
+            "Curación rápida",
+            "Reflejos mejorados",
+            "Sigilo absoluto",
+            "Sentidos agudizados"
+        ],
+        "habilidades": [
+            "Arquería",
+            "Sigilo",
+            "Espionaje",
+            "Esgrima",
+            "Herboristería",
+            "Canto élfico",
+            "Tiro con arco",
+            "Montar a caballo",
+            "Doma de animales",
+            "Navegación",
+            "Tácticas de combate",
+            "Estrategia militar"
+        ]
+    }
+]

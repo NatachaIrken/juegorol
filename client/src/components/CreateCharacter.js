@@ -8,9 +8,8 @@ const CreateCharacter = () => {
     const [razas, setRazas] = useState([]);
     const [habilidades, setHabilidades] = useState([]);
     const [poderes, setPoderes] = useState([]);
-    const [habilidad1, setHabilidad1] = useState('');
-    const [habilidad2, setHabilidad2] = useState('');
-    const [poder, setPoder] = useState('');
+    const [habilidadesSeleccionadas, setHabilidadesSeleccionadas] = useState([]);
+    const [poderesSeleccionados, setPoderesSeleccionados] = useState([]);
     const [personajeCreado, setPersonajeCreado] = useState(null);
 
     useEffect(() => {
@@ -25,9 +24,8 @@ const CreateCharacter = () => {
             if (razaSeleccionada) {
                 setHabilidades(razaSeleccionada.habilidades);
                 setPoderes(razaSeleccionada.poderes);
-                setHabilidad1('');
-                setHabilidad2('');
-                setPoder('');
+                setHabilidadesSeleccionadas([]);
+                setPoderesSeleccionados([]);
             }
         }
     }, [raza, razas]);
@@ -38,8 +36,8 @@ const CreateCharacter = () => {
             nombre_personaje: personaje,
             raza_id: raza,
             nivel: nivel,
-            habilidades: [habilidad1, habilidad2],
-            poderes: [poder]
+            habilidades: habilidadesSeleccionadas,
+            poderes: poderesSeleccionados
         };
 
         axios.post('http://localhost:3001/api/personajes', nuevoPersonaje)
@@ -48,11 +46,24 @@ const CreateCharacter = () => {
                 setPersonaje('');
                 setRaza('');
                 setNivel(1);
-                setHabilidad1('');
-                setHabilidad2('');
-                setPoder('');
+                setHabilidadesSeleccionadas([]);
+                setPoderesSeleccionados([]);
             })
             .catch(error => console.error(error));
+    };
+
+    const handleHabilidadChange = (e) => {
+        const { value, checked } = e.target;
+        setHabilidadesSeleccionadas(prev =>
+            checked ? [...prev, value] : prev.filter(h => h !== value)
+        );
+    };
+
+    const handlePoderChange = (e) => {
+        const { value, checked } = e.target;
+        setPoderesSeleccionados(prev =>
+            checked ? [...prev, value] : prev.filter(p => p !== value)
+        );
     };
 
     return (
@@ -77,43 +88,32 @@ const CreateCharacter = () => {
                     ))}
                 </select>
                 <div>
-                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidad 1</h3>
-                    <select
-                        value={habilidad1}
-                        onChange={(e) => setHabilidad1(e.target.value)}
-                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
-                    >
-                        <option value="">Selecciona una Habilidad</option>
-                        {habilidades.map((h, index) => (
-                            <option key={index} value={h.nombre}>{h.nombre}</option>
-                        ))}
-                    </select>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidades</h3>
+                    {habilidades.map((h) => (
+                        <label key={h.nombre} className="block">
+                            <input
+                                type="checkbox"
+                                value={h.nombre}
+                                checked={habilidadesSeleccionadas.includes(h.nombre)}
+                                onChange={handleHabilidadChange}
+                            />
+                            {h.nombre}
+                        </label>
+                    ))}
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold mb-2">Selecciona Habilidad 2</h3>
-                    <select
-                        value={habilidad2}
-                        onChange={(e) => setHabilidad2(e.target.value)}
-                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
-                    >
-                        <option value="">Selecciona una Habilidad</option>
-                        {habilidades.map((h, index) => (
-                            <option key={index} value={h.nombre}>{h.nombre}</option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <h3 className="text-xl font-bold mb-2">Selecciona un Poder</h3>
-                    <select
-                        value={poder}
-                        onChange={(e) => setPoder(e.target.value)}
-                        className="p-3 w-full rounded-md bg-gray-800 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
-                    >
-                        <option value="">Selecciona un Poder</option>
-                        {poderes.map((p, index) => (
-                            <option key={index} value={p.nombre}>{p.nombre}</option>
-                        ))}
-                    </select>
+                    <h3 className="text-xl font-bold mb-2">Selecciona Poderes</h3>
+                    {poderes.map((p) => (
+                        <label key={p.nombre} className="block">
+                            <input
+                                type="checkbox"
+                                value={p.nombre}
+                                checked={poderesSeleccionados.includes(p.nombre)}
+                                onChange={handlePoderChange}
+                            />
+                            {p.nombre}
+                        </label>
+                    ))}
                 </div>
                 <button type="submit" className="p-3 w-full bg-blue-500 rounded-md text-white hover:bg-blue-700">
                     Crear Personaje
